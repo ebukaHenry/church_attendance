@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-body text-center p-5">
+                    <h2 class="mb-4">Dominion City</h2>
+                    <h5 class="text-muted mb-4">Admin Login</h5>
+                    
+                    <form method="POST">
+                        <div class="mb-3">
+                            <input type="text" class="form-control" placeholder="Username" value="admin" disabled>
+                        </div>
+                        <div class="mb-4">
+                            <input type="password" class="form-control" placeholder="Password" value="1234" disabled>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Login</button>
+                    </form>
+
+                    <p class="mt-4 text-muted small">
+                        Demo Login - Just click the button
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

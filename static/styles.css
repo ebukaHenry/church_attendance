@@ -1,0 +1,40 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.navbar {
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.card {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: none;
+}
+
+.table-responsive {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Make tables scroll horizontally on mobile */
+.table {
+    min-width: 700px;
+}
+
+/* Improve form on mobile */
+.form-control {
+    font-size: 1rem;
+    padding: 12px;
+}
+
+.btn {
+    padding: 10px 20px;
+}
+
+/* Thank you page */
+.thank-you {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

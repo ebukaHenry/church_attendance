@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Dashboard</h2>
+    <button id="darkModeToggle" class="btn btn-outline-secondary">
+        🌙 Dark Mode
+    </button>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-3">
+    <div class="col-12 col-md-4">
+        <div class="card text-white bg-primary h-100">
+            <div class="card-body">
+                <h6>Total Attendance (All Time)</h6>
+                <h2 id="totalAttendance">312</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card text-white bg-success h-100">
+            <div class="card-body">
+                <h6>Total Males</h6>
+                <h2 id="totalMale">148</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-4">
+        <div class="card text-white bg-info h-100">
+            <div class="card-body">
+                <h6>Total Females</h6>
+                <h2 id="totalFemale">164</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mt-4">
+    <div class="card-header">
+        <strong>Attendance Overview</strong>
+        <div class="float-end">
+            <select id="serviceFilter" class="form-select d-inline w-auto" onchange="applyFilters()">
+                <option value="all">All Services</option>
+                <option value="Sunday">Sunday Service</option>
+                <option value="Mid-week">Mid-week Service</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-body">
+        <canvas id="attendanceChart" height="280"></canvas>
+    </div>
+</div>
+
+<!-- All Members Section -->
+<div class="card mt-4">
+    <div class="card-header d-flex justify-content-between">
+        <strong>All Church Members (QR Users)</strong>
+        <input type="text" id="memberSearch" class="form-control w-50" placeholder="Search members..." onkeyup="searchMembers()">
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover" id="membersTable">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Phone</th>
+                        <th>Gender</th>
+                        <th>Total Attendance</th>
+                    </tr>
+                </thead>
+                <tbody id="membersBody">
+                    <!-- Populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Dark Mode Toggle
+const toggleBtn = document.getElementById('darkModeToggle');
+toggleBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    toggleBtn.textContent = document.body.classList.contains('dark-mode') ? '☀️ Light Mode' : '🌙 Dark Mode';
+});
+
+// Line Chart
+const ctx = document.getElementById('attendanceChart');
+let attendanceChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['May 9', 'May 16', 'May 18', 'May 21', 'May 23'],
+        datasets: [{
+            label: 'Total Attendance',
+            data: [180, 245, 198, 87, 312],
+            borderColor: '#0d6efd',
+            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+            tension: 0.4,
+            borderWidth: 3
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'top' } }
+    }
+});
+
+function applyFilters() {
+    alert("Filter applied! (Full backend filtering coming in final version)");
+    // You can expand this later with AJAX
+}
+
+// Sample Members Data (Will be replaced with real data from backend)
+const sampleMembers = [
+    {name: "Chinedu Okoro", phone: "08034567890", gender: "Male", attendance: 12},
+    {name: "Adaeze Nwosu", phone: "09087654321", gender: "Female", attendance: 8},
+    {name: "Emeka Obi", phone: "07011223344", gender: "Male", attendance: 15},
+    {name: "Chioma Eze", phone: "08155667788", gender: "Female", attendance: 5}
+];
+
+function loadMembers() {
+    const tbody = document.getElementById('membersBody');
+    tbody.innerHTML = '';
+    sampleMembers.forEach(m => {
+        const row = `<tr>
+            <td>${m.name}</td>
+            <td>${m.phone}</td>
+            <td><span class="badge bg-${m.gender === 'Male' ? 'primary' : 'danger'}">${m.gender}</span></td>
+            <td>${m.attendance}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+    });
+}
+
+function searchMembers() {
+    let input = document.getElementById("memberSearch").value.toLowerCase();
+    let rows = document.querySelectorAll("#membersTable tbody tr");
+    rows.forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(input) ? "" : "none";
+    });
+}
+
+// Initialize
+loadMembers();
+</script>
+
+<style>
+.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+.dark-mode .card, .dark-mode .navbar {
+    background-color: #1e1e1e !important;
+    color: #e0e0e0;
+}
+.dark-mode .table-dark {
+    background-color: #2a2a2a;
+}
+</style>
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="mb-4">Settings</h2>
+
+<div class="card">
+    <div class="card-body">
+        <h5>Account Settings</h5>
+        <hr>
+        
+        <form>
+            <div class="mb-3">
+                <label>Change Password</label>
+                <input type="password" class="form-control" placeholder="Current Password">
+            </div>
+            <div class="mb-3">
+                <input type="password" class="form-control" placeholder="New Password">
+            </div>
+            <button type="button" class="btn btn-warning">Update Password</button>
+        </form>
+
+        <hr>
+        <h5 class="text-danger">Danger Zone</h5>
+        <button class="btn btn-outline-danger">Delete All Attendance Records</button>
+        <button class="btn btn-danger mt-2">Reset Database (Demo Only)</button>
+    </div>
+</div>
+
+{% endblock %}

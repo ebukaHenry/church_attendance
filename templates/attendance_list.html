@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="mb-4">Attendance Records</h2>
+
+<!-- Filters -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Service Type</label>
+        <select id="serviceFilter" class="form-select" onchange="applyFilters()">
+            <option value="all">All Services</option>
+            <option value="Sunday">Sunday Service</option>
+            <option value="Mid-week">Mid-week Service</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Gender</label>
+        <select id="genderFilter" class="form-select" onchange="applyFilters()">
+            <option value="all">All Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select id="statusFilter" class="form-select" onchange="applyFilters()">
+            <option value="all">All</option>
+            <option value="present">Present</option>
+            <option value="absent">Absent</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Search</label>
+        <input type="text" id="searchInput" class="form-control" placeholder="Name or Phone" onkeyup="applyFilters()">
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover" id="attendanceTable">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Gender</th>
+                <th>Service Date</th>
+                <th>Service Type</th>
+                <th>Status</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+            <tr data-gender="{{ record.gender }}" data-service="{{ record.service_type }}" data-status="present">
+                <td>{{ record.name }}</td>
+                <td>{{ record.phone }}</td>
+                <td>
+                    <span class="badge bg-{{ 'primary' if record.gender == 'Male' else 'danger' }}">
+                        {{ record.gender }}
+                    </span>
+                </td>
+                <td>{{ record.service_date }}</td>
+                <td>{{ record.service_type }}</td>
+                <td><span class="badge bg-success">Present</span></td>
+                <td>{{ record.timestamp[:16] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<p class="text-muted small mt-3">
+    Note: "Absent" filter is simulated for demo. Full absent tracking will be added in final version.
+</p>
+
+<script>
+function applyFilters() {
+    const searchText = document.getElementById("searchInput").value.toLowerCase();
+    const genderFilter = document.getElementById("genderFilter").value;
+    const serviceFilter = document.getElementById("serviceFilter").value;
+    const statusFilter = document.getElementById("statusFilter").value;
+
+    const rows = document.querySelectorAll("#attendanceTable tbody tr");
+
+    rows.forEach(row => {
+        const name = row.cells[0].textContent.toLowerCase();
+        const phone = row.cells[1].textContent.toLowerCase();
+        const gender = row.getAttribute("data-gender");
+        const service = row.getAttribute("data-service");
+        const status = row.getAttribute("data-status");
+
+        const matchesSearch = name.includes(searchText) || phone.includes(searchText);
+        const matchesGender = genderFilter === "all" || gender === genderFilter;
+        const matchesService = serviceFilter === "all" || service === serviceFilter;
+        const matchesStatus = statusFilter === "all" || status === statusFilter;
+
+        if (matchesSearch && matchesGender && matchesService && matchesStatus) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    applyFilters();
+});
+</script>
+
+{% endblock %}

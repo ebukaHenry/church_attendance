@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="mb-4">Generate Church QR Code</h2>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Service Date</label>
+                <input type="date" name="service_date" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Service Type</label>
+                <select name="service_type" class="form-select" required>
+                    <option value="Sunday">Sunday Service</option>
+                    <option value="Mid-week">Mid-week Service</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg">Generate QR Code</button>
+        </form>
+    </div>
+</div>
+
+{% if qr_image %}
+<div class="mt-4 text-center">
+    <h5>QR Code for {{ service_date }} - {{ service_type }}</h5>
+    <img src="{{ url_for('static', filename=qr_image.split('/')[-1]) }}" 
+         class="img-fluid border p-3" style="max-width: 350px;">
+    <br><br>
+    <a href="{{ url_for('static', filename=qr_image.split('/')[-1]) }}" 
+       class="btn btn-primary" download>Download QR Code</a>
+</div>
+{% endif %}
+
+{% endblock %}
