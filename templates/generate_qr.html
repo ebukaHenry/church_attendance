@@ -19,19 +19,19 @@
                 </select>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-lg">Generate QR Code</button>
+            <button type="submit" class="btn btn-success btn-lg">Generate QR Code</button>
         </form>
     </div>
 </div>
 
 {% if qr_image %}
-<div class="mt-4 text-center">
+<div class="mt-5 text-center">
     <h5>QR Code for {{ service_date }} - {{ service_type }}</h5>
     <img src="{{ url_for('static', filename=qr_image.split('/')[-1]) }}" 
-         class="img-fluid border p-3" style="max-width: 350px;">
+         class="img-fluid border p-3 shadow" style="max-width: 320px;">
     <br><br>
     <a href="{{ url_for('static', filename=qr_image.split('/')[-1]) }}" 
-       class="btn btn-primary" download>Download QR Code</a>
+       class="btn btn-primary" download>📥 Download QR Code</a>
 </div>
 {% endif %}
 
