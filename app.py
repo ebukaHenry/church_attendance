@@ -59,9 +59,9 @@ def generate_qr():
         service_date = request.form['service_date']
         service_type = request.form['service_type']
         
-        base_url = "https://web-production-7d59a.up.railway.app"   # ← Make sure this is exact
+        base_url = "https://web-production-7d59a.up.railway.app"
         
-        qr_link = f"{base_url}/scan/church_service|{service_date}|{service_type}"
+        qr_link = f"{base_url}/scan?data=church_service|{service_date}|{service_type}"
         
         conn = get_db()
         qr = qrcode.make(qr_link)
@@ -79,20 +79,18 @@ def generate_qr():
                              service_type=service_type)
     
     return render_template('generate_qr.html')
-# Keep other routes (attendance_list, settings, etc.) and add @login_required
 
-@app.route('/scan/<path:qr_data>')
-def scan_qr(qr_data):
+@app.route('/scan')
+def scan_qr():
     try:
-        # Clean the qr_data (remove base url if it came with it)
-        if qr_data.startswith('http'):
-            qr_data = qr_data.split('/scan/')[-1]
-        
-        # Split the data
-        if '|' not in qr_data:
-            return "Invalid QR Code", 400
+        data = request.args.get('data')
+        if not data:
+            return "Missing data parameter", 400
             
-        parts = qr_data.split('|')
+        if '|' not in data:
+            return "Invalid QR format", 400
+            
+        parts = data.split('|')
         service_date = parts[-2]
         service_type = parts[-1]
         
@@ -100,7 +98,12 @@ def scan_qr(qr_data):
                              service_date=service_date, 
                              service_type=service_type)
     except:
-        return "Invalid QR Code. Please contact admin.", 400
+        return """
+            <h2 style="color:red;text-align:center;margin-top:80px;">
+                Invalid QR Code<br><br>
+                Please generate a new one.
+            </h2>
+        """, 400
     
 @app.route('/attendance_list')
 @login_required
