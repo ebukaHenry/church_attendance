@@ -111,4 +111,5 @@ def settings():
 
 if __name__ == '__main__':
     os.makedirs('static', exist_ok=True)
-    app.run(debug=True)
+    # For local development only
+    app.run(host='0.0.0.0', port=5000, debug=True)
