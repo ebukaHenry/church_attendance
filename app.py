@@ -132,6 +132,21 @@ def all_members():
     """).fetchall()
     return render_template('all_members.html', members=members)
 
+@app.route('/manage_mvps')
+@login_required
+def manage_mvps():
+    conn = get_db()
+    
+    # Get all users (MVPs)
+    mvps = conn.execute("""
+        SELECT id, name, phone, gender, 
+               (SELECT MIN(timestamp) FROM attendance WHERE user_id = users.id) as first_attendance
+        FROM users 
+        ORDER BY first_attendance DESC
+    """).fetchall()
+    
+    return render_template('manage_mvps.html', mvps=mvps)
+
 @app.route('/settings')
 @login_required
 def settings():

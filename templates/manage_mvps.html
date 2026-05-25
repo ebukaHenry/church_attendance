@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="mb-4">Manage MVPs</h2>
+
+<!-- Filters -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <label class="form-label">Filter by Gender</label>
+        <select id="genderFilter" class="form-select" onchange="applyFilters()">
+            <option value="all">All Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">First Timer Date</label>
+        <input type="date" id="dateFilter" class="form-control" onchange="applyFilters()">
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+        <button class="btn btn-secondary w-100" onclick="clearFilters()">Clear Filters</button>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover" id="mvpsTable">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Gender</th>
+                <th>Status</th>
+                <th>First Timer Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for mvp in mvps %}
+            <tr data-gender="{{ mvp.gender }}">
+                <td>{{ mvp.name }}</td>
+                <td>{{ mvp.phone }}</td>
+                <td>
+                    <span class="badge bg-{{ 'primary' if mvp.gender == 'Male' else 'danger' }}">
+                        {{ mvp.gender }}
+                    </span>
+                </td>
+                <td><span class="badge bg-success">Active</span></td>
+                <td>{{ mvp.first_attendance[:10] if mvp.first_attendance else 'Not yet' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Floating Add Button -->
+<button class="btn btn-success btn-lg rounded-circle shadow" 
+        style="position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;"
+        onclick="showAddForm()">
+    +
+</button>
+
+<!-- Add New MVP Modal -->
+<div class="modal fade" id="addMvpModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New MVP</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addMvpForm">
+                    <div class="mb-3">
+                        <label>Full Name</label>
+                        <input type="text" id="name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Phone Number</label>
+                        <input type="tel" id="phone" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Gender</label>
+                        <select id="gender" class="form-select" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onclick="saveNewMvp()">Save MVP</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showAddForm() {
+    new bootstrap.Modal(document.getElementById('addMvpModal')).show();
+}
+
+function saveNewMvp() {
+    // For demo - In real version, send to backend via fetch
+    alert("✅ MVP Added Successfully!\n\n(This is a demo. Full backend save coming soon.)");
+    bootstrap.Modal.getInstance(document.getElementById('addMvpModal')).hide();
+    // You can refresh the table later
+}
+
+function applyFilters() {
+    const genderFilter = document.getElementById("genderFilter").value;
+    const dateFilter = document.getElementById("dateFilter").value;
+    
+    const rows = document.querySelectorAll("#mvpsTable tbody tr");
+    
+    rows.forEach(row => {
+        const gender = row.getAttribute("data-gender");
+        const matchesGender = genderFilter === "all" || gender === genderFilter;
+        row.style.display = matchesGender ? "" : "none";
+    });
+}
+
+function clearFilters() {
+    document.getElementById("genderFilter").value = "all";
+    document.getElementById("dateFilter").value = "";
+    applyFilters();
+}
+</script>
+
+{% endblock %}
