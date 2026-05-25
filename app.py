@@ -132,20 +132,45 @@ def all_members():
     """).fetchall()
     return render_template('all_members.html', members=members)
 
+# ====================== MANAGE MVPs ======================
+
 @app.route('/manage_mvps')
 @login_required
 def manage_mvps():
     conn = get_db()
-    
-    # Get all users (MVPs)
     mvps = conn.execute("""
         SELECT id, name, phone, gender, 
-               (SELECT MIN(timestamp) FROM attendance WHERE user_id = users.id) as first_attendance
+               (SELECT MIN(timestamp) FROM attendance 
+                WHERE user_id = users.id) as first_attendance
         FROM users 
-        ORDER BY first_attendance DESC
+        ORDER BY name
     """).fetchall()
-    
     return render_template('manage_mvps.html', mvps=mvps)
+
+
+@app.route('/add_mvp', methods=['POST'])
+@login_required
+def add_mvp():
+    name = request.form.get('name')
+    phone = request.form.get('phone')
+    gender = request.form.get('gender')
+    
+    if not name or not phone or not gender:
+        flash('All fields are required!', 'danger')
+        return redirect(url_for('manage_mvps'))
+    
+    conn = get_db()
+    try:
+        conn.execute("INSERT INTO users (name, phone, gender) VALUES (?, ?, ?)",
+                    (name.strip(), phone.strip(), gender))
+        conn.commit()
+        flash('✅ New MVP added successfully!', 'success')
+    except sqlite3.IntegrityError:
+        flash('❌ Phone number already exists!', 'danger')
+    except Exception as e:
+        flash('Error adding MVP', 'danger')
+    
+    return redirect(url_for('manage_mvps'))
 
 @app.route('/settings')
 @login_required
