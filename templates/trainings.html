@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="mb-4">Training Management & Dashboard</h2>
+
+<!-- Statistics Cards -->
+<div class="row g-3 mb-5">
+    {% for stat in training_stats %}
+    <div class="col-md-4">
+        <div class="card text-white bg-primary h-100">
+            <div class="card-body">
+                <h6>{{ stat.training_name }}</h6>
+                <h2>{{ stat.completed }} / {{ total_members }}</h2>
+                <h5>{{ stat.percentage }}% Completed</h5>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Add Training Record -->
+<div class="card mb-4">
+    <div class="card-header"><strong>Record New Training Completion</strong></div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('add_training') }}" class="row g-3">
+            <div class="col-md-4">
+                <label>Member</label>
+                <select name="user_id" class="form-select" required>
+                    {% for member in members %}
+                    <option value="{{ member.id }}">{{ member.name }} ({{ member.phone }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label>Training</label>
+                <select name="training_id" class="form-select" required>
+                    {% for training in trainings_list %}
+                    <option value="{{ training.id }}">{{ training.training_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label>Completion Date</label>
+                <input type="date" name="completion_date" class="form-control" required>
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+                <button type="submit" class="btn btn-success w-100">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Members Training Records -->
+<h4>Church Members Training Records</h4>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Gender</th>
+                <th>Trainings Completed</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in members %}
+            <tr>
+                <td>{{ member.name }}</td>
+                <td>{{ member.phone }}</td>
+                <td>{{ member.gender }}</td>
+                <td>{{ member.trainings or 'None' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

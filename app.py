@@ -132,6 +132,144 @@ def all_members():
     """).fetchall()
     return render_template('all_members.html', members=members)
 
+
+@app.route('/workers', methods=['GET', 'POST'])
+@login_required
+def workers():
+    conn = get_db()
+    
+    if request.method == 'POST':
+        name = request.form['name']
+        gender = request.form['gender']
+        department = request.form['department']
+        role = request.form['role']
+        address = request.form['address']
+        lga = request.form['lga']
+        email = request.form.get('email')
+        
+        conn.execute("""INSERT INTO workers 
+            (name, gender, department, role, address, lga, email, date_added) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)""",
+            (name, gender, department, role, address, lga, email))
+        conn.commit()
+        flash('Worker added successfully!', 'success')
+        return redirect(url_for('workers'))
+    
+    # Get filter
+    dept_filter = request.args.get('department', 'all')
+    
+    query = "SELECT * FROM workers"
+    params = []
+    if dept_filter != 'all':
+        query += " WHERE department = ?"
+        params.append(dept_filter)
+    query += " ORDER BY department, name"
+    
+    workers_list = conn.execute(query, params).fetchall()
+    
+    departments = conn.execute("SELECT DISTINCT department FROM workers ORDER BY department").fetchall()
+    
+    return render_template('workers.html', 
+                         workers=workers_list, 
+                         departments=departments,
+                         current_filter=dept_filter)
+# ====================== PUBLIC WORKERS FORM ======================
+
+@app.route('/join_workers', methods=['GET', 'POST'])
+def join_workers():
+    if request.method == 'POST':
+        name = request.form['name']
+        gender = request.form['gender']
+        department = request.form['department']
+        role = request.form['role']
+        address = request.form['address']
+        lga = request.form['lga']
+        
+        conn = get_db()
+        conn.execute("""INSERT INTO workers 
+            (name, gender, department, role, address, lga, date_added) 
+            VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)""",
+            (name, gender, department, role, address, lga))
+        conn.commit()
+        
+        return render_template('thank_you_worker.html')
+    
+    return render_template('public_workers_form.html')
+
+
+# @app.route('/workers')
+# @login_required
+# def workers():
+#     conn = get_db()
+#     workers_list = conn.execute("SELECT * FROM workers ORDER BY department, name").fetchall()
+#     return render_template('workers.html', workers=workers_list)
+
+# ====================== TRAINING MANAGEMENT ======================
+
+@app.route('/trainings')
+@login_required
+def trainings():
+    conn = get_db()
+    
+    # Dashboard stats
+    total_members = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+    
+    training_stats = conn.execute("""
+        SELECT t.training_name, COUNT(ut.id) as completed,
+               ROUND(COUNT(ut.id) * 100.0 / ?, 1) as percentage
+        FROM trainings t
+        LEFT JOIN user_trainings ut ON t.id = ut.training_id
+        GROUP BY t.id
+        ORDER BY completed DESC
+    """, (total_members if total_members > 0 else 1,)).fetchall()
+    
+    # All members with their trainings
+    members = conn.execute("""
+        SELECT u.id, u.name, u.gender, u.phone,
+               GROUP_CONCAT(t.training_name, ', ') as trainings
+        FROM users u
+        LEFT JOIN user_trainings ut ON u.id = ut.user_id
+        LEFT JOIN trainings t ON ut.training_id = t.id
+        GROUP BY u.id
+        ORDER BY u.name
+    """).fetchall()
+    
+    trainings_list = conn.execute("SELECT * FROM trainings").fetchall()
+    
+    return render_template('trainings.html', 
+                         training_stats=training_stats,
+                         members=members,
+                         trainings_list=trainings_list,
+                         total_members=total_members)
+
+@app.route('/organogram')
+@login_required
+def organogram():
+    conn = get_db()
+    hierarchy = conn.execute("""
+        SELECT department, role, COUNT(*) as count
+        FROM workers 
+        GROUP BY department, role
+        UNION
+        SELECT 'Members' as department, 'Regular Member' as role, COUNT(*) as count
+        FROM users
+    """).fetchall()
+    return render_template('organogram.html', hierarchy=hierarchy)
+
+@app.route('/add_training', methods=['POST'])
+@login_required
+def add_training():
+    user_id = request.form.get('user_id')
+    training_id = request.form.get('training_id')
+    completion_date = request.form.get('completion_date')
+    
+    conn = get_db()
+    conn.execute("INSERT INTO user_trainings (user_id, training_id, completion_date) VALUES (?, ?, ?)",
+                (user_id, training_id, completion_date))
+    conn.commit()
+    flash('Training record added!', 'success')
+    return redirect(url_for('trainings'))
+
 # ====================== MANAGE MVPs ======================
 
 @app.route('/manage_mvps')

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white text-center">
+                <h4>Church Workers Registration Form</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Full Name</label>
+                            <input type="text" name="name" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Gender</label>
+                            <select name="gender" class="form-select" required>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Department</label>
+                            <select name="department" class="form-select" required>
+                                <option value="">Select Department</option>
+                                <option value="Choir">Choir</option>
+                                <option value="DC Training">DC Training</option>
+                                <option value="Technical">Technical</option>
+                                <option value="Teens Church">Teens Church</option>
+                                <option value="Sanctuary">Sanctuary</option>
+                                <option value="Mvp">MVP</option>
+                                <option value="Kings kids">Kings Kids</option>
+                                <option value="Welfare">Welfare</option>
+                                <option value="Admin/Finance">Admin/Finance</option>
+                                <option value="Intercessory">Intercessory</option>
+                                <option value="Traffic">Traffic</option>
+                                <option value="Protocol/Security">Protocol/Security</option>
+                                <option value="Ushers">Ushers</option>
+                                <option value="Greeters">Greeters</option>
+                                <option value="Pastoral">Pastoral</option>
+                                <option value="Medical">Medical</option>
+                                <option value="Media">Media</option>
+                                <option value="Evangelism">Evangelism</option>
+                                <option value="Drama/Creatives">Drama/Creatives</option>
+                                <option value="I-care/Information desk">I-care / Information Desk</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Role</label>
+                            <select name="role" class="form-select" required>
+                                <option value="Worker">Worker</option>
+                                <option value="Head">Head</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Address</label>
+                        <input type="text" name="address" class="form-control" required placeholder="House No, Street, Area">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>LGA (Anambra)</label>
+                        <select name="lga" class="form-select" required>
+                            <option value="">Select LGA</option>
+                            <option value="Awka South">Awka South</option>
+                            <option value="Awka North">Awka North</option>
+                            <option value="Onitsha North">Onitsha North</option>
+                            <option value="Onitsha South">Onitsha South</option>
+                            <option value="Nnewi North">Nnewi North</option>
+                            <option value="Nnewi South">Nnewi South</option>
+                            <!-- Add more LGAs as needed -->
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-lg w-100">Submit Registration</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
